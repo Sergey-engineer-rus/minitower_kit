@@ -1,50 +1,18 @@
 #!/bin/bash
 # 
+if 0; then
+BASEDIR=$(dirname $0)
+PROJECT_PATH=$(cd $BASEDIR; pwd)
 cd
 . /lib/lsb/init-functions
 
-sudo mkdir /usr/local/lighting_server || log_warning_msg "Can't make dir /usr/local/lighting_server" 
-sudo cp -vf /home/pi/absminitowerkit/sysinfo.py /usr/local/lighting_server/sysinfo.py 2>/dev/null
-sudo chown sudo /usr/local/lighting_server/sysinfo.py
-sudo chgrp sudo /usr/local/lighting_server/sysinfo.py
+#sudo rm -r /usr/local/minitower_kit
+sudo mkdir /usr/local/minitower_kit || log_warning_msg "Can't make dir /usr/local/backlight_server" 
+#sudo cp ${PROJECT_PATH}/sysinfo.py /usr/local/minitower_kit/sysinfo.py 
+sudo cp ${PROJECT_PATH}/backlight_server.py /usr/local/minitower_kit/ 2>/dev/null
 
-sudo apt update #&& sudo apt -y -q install git cmake scons python3-dev || log_action_msg "please check internet connection and make sure it can access internet!" 
+sudo apt update
 sudo apt upgrade -y
-
-sudo usermod -a -G gpio,i2c pi && log_action_msg "grant privilledges to user pi" || log_warning_msg "Grant privilledges failed!" 
-
-# install libraries. 
-#log_action_msg "Check dependencies and install deps packages..."
-#sudo apt -y install python3 python3-pip python3-pil libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libopenjp2-7 libtiff5 && log_action_msg "deps packages installed successfully!" || log_warning_msg "deps packages install process failed, please check the internet connection..." 
-
-# install psutil lib.
-#sudo -H pip3 install psutil
-#if [ $? -eq 0 ]; then
-#	log_action_msg "psutil library has been installed successfully."
-#fi
-
-# grant privilledges to user store.
-
-
-# download driver from internet 
-cd /usr/local/ 
-if [ ! -d luma.examples ]; then
-   cd /usr/local/
-   git clone https://github.com/rm-hull/luma.examples.git && cd /usr/local/luma.examples/ && sudo cp -f /home/store/absminitowerkit/sysinfo.py . || log_warning_msg "Could not download repository from github, please check the internet connection..." 
-else
-   # copy sysinfo.py application to /usr/local/luma.examples/examples/ folder.
-   sudo cp -vf /home/store/absminitowerkit/sysinfo.py /usr/local/luma.examples/examples/ 2>/dev/null
-fi 
-
-cd /usr/local/luma.examples/  && sudo -H pip3 install -e . && log_action_msg "Install dependencies packages successfully..." || log_warning_msg "Cound not access github repository, please check the internet connections!!!" 
-
-# download rpi_ws281x libraries.
-cd /usr/local/ 
-if [ ! -d rpi_ws281x ]; then
-   cd /usr/local/
-   sudo git clone https://github.com/jgarff/rpi_ws281x && log_action_msg "Download moodlight driver finished..." || log_warning_msg "Could not access github repository, please check the internet connections!!!" 
-   cd rpi_ws281x/ && sudo scons && mkdir build && cd build/ && cmake -D BUILD_SHARED=OFF -D BUILD_TEST=ON .. && sudo make install && sudo cp ./test /usr/bin/moodlight  && log_action_msg "Installation finished..." || log_warning_msg "Installation process failed! Please try again..."
-fi
 
 # Enable i2c function on raspberry pi.
 log_action_msg "Enable i2c on Raspberry Pi "
@@ -56,12 +24,29 @@ if [ $? -eq 0 ]; then
    log_action_msg "i2c has been setting up successfully"
 fi
 
-# install minitower service.
-log_action_msg "Minitower service installation begin..."
+sudo usermod -a -G gpio,i2c pi && log_action_msg "grant privilledges to user pi" || log_warning_msg "Grant privilledges failed!" 
 
-if [ -f /usr/bin/moodlight ]; then
-   log_action_msg "moodlight driver install successfully"
+cd /usr/local/ 
+if [ ! -d luma.examples ]; then
+    sudo git clone https://github.com/rm-hull/luma.examples.git || log_warning_msg "Could not download repository from github, please check the internet connection..." 
 fi
+
+sudo cp ${PROJECT_PATH}/sysinfo.py /usr/local/luma.examples/examples/ 
+
+cd /usr/local/luma.examples/ && sudo -H pip3 install -e . && log_action_msg "Install dependencies packages successfully..." || log_warning_msg "Cound not access github repository, please check the internet connections!!!" 
+sudo python /usr/local/luma.examples/examples/invaders.py &
+
+sudo pip3 install rpi_ws281x adafruit-circuitpython-neopixel
+sudo python3 -m pip install --force-reinstall adafruit-blinka
+sudo python /usr/local/minitower_kit/backlight_server.py &
+fi
+sleep 2
+exec 3<>/dev/tcp/localhost/60485
+echo "(0, 255, 0)" 1>&3
+sleep 1
+echo "(0, 255, 255)" 1>&3
+sleep 1
+echo "(255, 0, 255)" 1>&3
 
 # oled screen display service.
 oled_svc="minitower_oled"
