@@ -3,6 +3,8 @@ import neopixel
 import socket
 import syslog
 
+# https://github.com/Sergey-engineer-rus/minitower_kit
+
 HOST = "localhost"  # Standard loopback interface address (localhost)
 PORT = 60485  # Port to listen on (non-privileged ports are > 1023)
 
