@@ -3,7 +3,7 @@ import neopixel
 import socket
 import syslog
 
-HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
+HOST = "localhost"  # Standard loopback interface address (localhost)
 PORT = 60485  # Port to listen on (non-privileged ports are > 1023)
 
 pixels = neopixel.NeoPixel(board.D18, 1)
@@ -14,7 +14,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     server_socket.bind((HOST, PORT))
     server_socket.listen()      
     server_socket.settimeout(0.2)
-    syslog.syslog(f"server socket binded to the {HOST}:{PORT}")
+    syslog.syslog(f"binded to the {HOST}:{PORT}")
     while True:
         try:
             conn, addr = server_socket.accept()
