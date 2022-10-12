@@ -21,7 +21,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         except socket.timeout:
             server_socket.settimeout(0.2)
             n += 5
-            v = 100 + 3 * abs((n // 50) * 50 - n % 50)
+            v = 100 + 3 * abs(((n % 100) // 50) * 50 - n % 50)
             pixels[0] = (v, v, v)
             continue
         except Exception as e:
