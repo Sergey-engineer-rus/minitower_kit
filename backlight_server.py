@@ -17,7 +17,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     syslog.syslog(f"server socket binded to the {HOST}:{PORT}")
     while True:
         try:
-            conn, addr = s.accept()
+            conn, addr = server_socket.accept()
         except socket.timeout:
             server_socket.settimeout(0.2)
             n += 5
