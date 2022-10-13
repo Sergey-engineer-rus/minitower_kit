@@ -37,7 +37,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
             while True:
                 server_socket.settimeout(None)
                 data = conn.recv(1024)
-                s = data.decode("ascii")
+                s = data.decode("ascii").strip()
                 #print(s)
                 err = f"error wrong data {data}"
                 if len(s) > 8 and len(s) < 16:
