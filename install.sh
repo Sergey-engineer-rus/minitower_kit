@@ -76,6 +76,8 @@ sudo sh -c "echo \"Description='Minitower backlight server'\" >> ${moodlight_svc
 sudo sh -c "echo \"DefaultDependencies=no\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"StartLimitIntervalSec=60\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"StartLimitBurst=5\" >> ${moodlight_svc_file}"
+sudo sh -c "echo \"After=multi-user.target\" >> ${moodlight_svc_file}"
+sudo sh -c "echo \"After=network.target\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"[Service]\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"RootDirectory=/\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"User=root\" >> ${moodlight_svc_file}"
