@@ -76,11 +76,10 @@ sudo sh -c "echo \"Description='Minitower backlight server'\" >> ${moodlight_svc
 sudo sh -c "echo \"DefaultDependencies=no\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"StartLimitIntervalSec=60\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"StartLimitBurst=5\" >> ${moodlight_svc_file}"
-sudo sh -c "echo \"After=${oled_svc}.service\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"[Service]\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"RootDirectory=/\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"User=root\" >> ${moodlight_svc_file}"
-sudo sh -c "echo \"Type=simple\" >> ${moodlight_svc_file}"
+sudo sh -c "echo \"Type=idle\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"KillMode=control-group\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"ExecStart=/bin/bash -c 'sudo /usr/bin/python3 /usr/local/minitower_kit/backlight_server.py &'\" >> ${moodlight_svc_file}"
 sudo sh -c "echo \"RemainAfterExit=yes\" >> ${moodlight_svc_file}"
@@ -121,6 +120,11 @@ log_success_msg "Minitower service installation finished successfully"
 log_action_msg "Please reboot Raspberry Pi and Have fun!" 
 sudo sync
 
+read -p "Do you want to install PyTTY SSH Client? (y/n) : " yesno
+if [ "${yesno}" == "y" ] ; then
+sudo apt-get install putty -y
+fi
+
 read -p "Do you want to reboot now? (type [Yes] to reboot) : " ans
 if [ "${ans}" == "Yes" ] ; then
 echo "Rebooting..."
@@ -128,4 +132,8 @@ sudo reboot
 else
 echo "Reboot canceled. Please reboot Raspberry Pi later."
 fi
+
+
+
+
 
