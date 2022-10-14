@@ -1,3 +1,4 @@
+from time import sleep
 import board
 import neopixel
 import socket
@@ -8,9 +9,7 @@ import syslog
 HOST = "localhost"  # Standard loopback interface address (localhost)
 PORT = 60485  # Port to listen on (non-privileged ports are > 1023)
 
-pixels = neopixel.NeoPixel(board.D18, 1)
-pixels[0] = (20, 20, 20)
-
+pixels = None
 n = 0
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     server_socket.bind((HOST, PORT))
@@ -20,11 +19,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     while True:
         try:
             conn, addr = server_socket.accept()
+            if pixels is None:
+                pixels = neopixel.NeoPixel(board.D18, 1)
+            pixels[0] = (20, 20, 20)
         except socket.timeout:
             server_socket.settimeout(0.2)
             n += 5
             v = 100 + 3 * abs(((n % 100) // 50) * 50 - n % 50)
-            pixels[0] = (v, v, v)
+            if n > 100:
+                if pixels is None:
+                    pixels = neopixel.NeoPixel(board.D18, 1)
+                pixels[0] = (v, v, v)
             continue
         except Exception as e:
             syslog.syslog(syslog.LOG_ERR, e)
